@@ -1,4 +1,4 @@
-<img src="/img/guitartecnicalogo.png" alt="Guitar Tecnica Logo" title="Guitar Tecnica Logo" style="display: inline-block; margin: 0 auto; max-width: 50px">
+<img src="/img/guitartecnicalogo.png" alt="Guitar Tecnica Logo" title="Guitar Tecnica Logo" width="50px">
 
 # Generative Tablature Exercises
 
@@ -7,11 +7,11 @@ Generative Tablature Exercises is a Python application of symbolic music for gen
 
 ## Example of use result
 #### Handwritten tablature
-<img src="/img/handwrittenExampleTablature.jpg" alt="Handwritten Example" title="Handwritten Example" style="display: inline-block; margin: 0 auto; max-width: 400px">
+<img src="/img/handwrittenExampleTablature.jpg" alt="Handwritten Example" title="Handwritten Example" width="400px">
 
 
 #### App-generated digitized tablature
-<img src="/img/digitizedTablature.jpg" alt="Digitized Tablature" title="Digitized Tablature" style="display: inline-block; margin: 0 auto; max-width: 400px">
+<img src="/img/digitizedTablature.jpg" alt="Digitized Tablature" title="Digitized Tablature"  width="400px">
 
 
 ## Installation
