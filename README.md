@@ -2,7 +2,7 @@
 
 # Generative Tablature Exercises
 
-Generative Tablature Exercises is a Python application of symbolic music for generating tablature exercises for specific string instruments like classical and flamenco guitar, oud and bouzouki. The application was built to meet the digitization needs of the work of Angelos Gialamas. Gialamas developed an innovative learning method for string instruments which drastically reduces the time required to achieve finger independence, strengthening and stretching. More information and his work can be found [here](https://guitartecnica.com/). 
+<b>Generative Tablature Exercises</b> is a Python application of symbolic music for generating tablature exercises for specific string instruments like classical and flamenco guitar, oud and bouzouki. The application was built to meet the digitization needs of the work of Angelos Gialamas. Gialamas developed an innovative learning method for string instruments which drastically reduces the time required to achieve finger independence, strengthening and stretching. More information and his work can be found [here](https://guitartecnica.com/). 
 
 
 ## Example result
