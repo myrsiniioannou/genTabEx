@@ -8,7 +8,6 @@ setup(
     author_email='mersene.io@gmail.com',
     packages=[],
     install_requires=[
-        'numpy',
-        'pandas',
+        'dataclasses'
     ]
 )
