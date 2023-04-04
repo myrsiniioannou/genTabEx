@@ -11,5 +11,5 @@ setup(
         'numpy',
         'pandas',
     ],
-    data_files=[('/my_project')]
+    data_files=[('testOFtest')]
 )
