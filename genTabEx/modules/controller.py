@@ -1,11 +1,18 @@
 
-# Initialization ******Connection with View/Input Events
+# Instantiation ******Connection with View/Input Events
 
 
-# Rendering - ******Connection with View/Input Events
+# Rendering ******Connection with View/Input Events
+
+############### FUCK MY LIFE
 
 
-# Serials
+
+# Generation ******Connection with View/Input Events
+    # generate book/chapter (new or continued)/unit (new or continued)/ paragraph etc
+
+
+# Serial Numbers
 
 ################ Actions  ################
 
@@ -14,12 +21,15 @@
     # Per measure, row, page
 
 
+######## Post-Rendering Sercices #############
+# generate book with different arrow sequences
+
 
 
 ################ Templates  ################
 # 1. Cover with title, subtitle, author, etc..
 # 2. 3 blank pages
-# 3.    Title page
+# 3. Title page
 # 4. Reverse title page (Back of title page)
 # 5. In-detail-title-page
 # 6. single blank page
