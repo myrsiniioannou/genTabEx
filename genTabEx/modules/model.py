@@ -52,9 +52,10 @@ class StringFingeringWithNote:
 
 
 @dataclass
-class Slur(int, Enum):
-    START = 1
-    END = 2
+class Slur:
+    start: bool
+    end: bool
+    string: int
 
 
 @dataclass
@@ -70,20 +71,21 @@ class Chord:
     accent: Optional[bool] = False
     articulation: Optional[Articulation] = None
     box: Optional[bool] = False
-    header: Optional[Fingering] = field(default_factory=list)# if there are a lot of header fingerings like ppp then the str could be more than 1 character long
-    note: Optional[Note] = None
+    header: Optional[Fingering] = field(default_factory=list)# multiple header fingering
+    note: Optional[Note] = field(default_factory=list) # list of notes
     noteSymbol: Optional[NoteSymbol] = None
-    stringFingering: Optional[StringFingering] = None
-    stringfingeringWithNote: Optional[StringFingeringWithNote] = None
+    stringFingering: Optional[StringFingering] = field(default_factory=list)
+    stringfingeringWithNote: Optional[StringFingeringWithNote] = field(default_factory=list)
     slur: Optional[Slur] = None
     triplet: Optional[Triplet] = None
 
 
 @dataclass
 class Formula:
-    number: int
-    chordNumber: int
     chords: Chord = field(default_factory=list)
+
+    def addChordToFormula(self, Chord):
+        self.chords.append(Chord)
 
 
 @dataclass

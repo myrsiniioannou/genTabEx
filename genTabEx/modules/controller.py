@@ -1,39 +1,45 @@
 from model import *
 
+# AYTA THA GINONTAI STO MAIN FILE
+formula = Formula(chords=[])
 
-def initializeBook(stringNumber, title, subtitle, chapters):
-    pass
+chord1 = Chord(duration=Duration.EIGHTH, accent=True, articulation=Articulation.DOWN)
+chord2 = Chord(duration=Duration.SIXTEENTH,
+               accent=False,
+               articulation=Articulation.UP,
+               box=True,
+               header=[Fingering.P, Fingering.I, Fingering.I],
+               note=[Note(noteOnString=1, string=6),Note(noteOnString=2, string=5)],
+               stringFingering=StringFingering(string=3, fingering=Fingering.I),
+               slur=Slur(start=True, end=False, string=3)
+               )
+chord3 = Chord(duration=Duration.HALF,
+               accent=False,
+               articulation=Articulation.DOWN,
+               box=True,
+               header=[Fingering.A, Fingering.A, Fingering.M],
+               noteSymbol=NoteSymbol(string=2),
+               stringfingeringWithNote=StringFingeringWithNote(string=4, fingering=Fingering.A, note=6),
+               slur=Slur(start=False, end=True, string=3)
+               )
+chord4 = Chord(duration=Duration.QUARTER,
+               articulation=Articulation.UP,
+               header=[Fingering.I, Fingering.A, Fingering.M],
+               stringfingeringWithNote=StringFingeringWithNote(string=2, fingering=Fingering.P, note=8),
+               triplet=Triplet.FIRST
+               )
 
 
-def initializeBookExtention(pathToBook):
-    pass
+formula.addChordToFormula(chord1)
+print(formula)
+print("----------------------")
+formula.addChordToFormula(chord2)
+print(formula)
+print("----------------------")
+formula.addChordToFormula(chord3)
+print(formula)
+print("----------------------")
 
-
-def initializeBookVariation(pathToBook):
-    pass
-
-
-
-# @dataclass
-# class Chord:
-#     duration: Duration
-#     accent: Optional[bool] = False
-#     articulation: Optional[Articulation] = None
-#     box: Optional[bool] = False
-#     header: Optional[Fingering] = field(default_factory=list)# if there are a lot of header fingerings like ppp then the str could be more than 1 character long
-#     note: Optional[Note] = None
-#     noteSymbol: Optional[NoteSymbol] = None
-#     stringFingering: Optional[StringFingering] = None
-#     stringfingeringWithNote: Optional[StringFingeringWithNote] = None
-#     slur: Optional[Slur] = None
-#     triplet: Optional[Triplet] = None
-
-
-# @dataclass
-# class StringFingering:
-#     string: int
-#     fingering: Fingering
 
 if __name__ == '__main__':
-    chord = Chord(duration = Duration.SIXTEENTH, header= ["ppp"], note= Note(noteOnString = 1, string = 3),
-                  stringFingering= StringFingering(2, Fingering.A))
+    pass
