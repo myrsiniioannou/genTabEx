@@ -1,5 +1,1 @@
-# VIEW
-
-# show tabs
-
-# REPRESENT CHORDS IN FORMULA
+import tkinter as tk
