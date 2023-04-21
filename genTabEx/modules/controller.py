@@ -11,8 +11,8 @@ import pickle
 
 
 
-with open("data/current-serial-note-number.pkl", 'wb') as f:  # open a text file
-    pickle.dump(250, f) # serialize the list
+# with open("data/current-serial-note-number.pkl", 'wb') as f:  # open a text file
+#     pickle.dump(248, f) # serialize the list
 
 
 with open("data/current-serial-note-number.pkl", 'rb') as f:

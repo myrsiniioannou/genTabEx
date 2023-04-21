@@ -75,7 +75,7 @@ class Chord:
     duration: Duration
     accent: Optional[bool] = False
     articulation: Optional[Articulation] = None
-    box: Optional[bool] = False
+    box: Optional[bool] = False # This should be calculated automatically
     header: Optional[Fingering] = field(default_factory=list)# multiple header fingering
     note: Optional[Note] = field(default_factory=list) # list of notes
     noteSymbol: Optional[NoteSymbol] = None
@@ -98,23 +98,20 @@ class Formula:
     def multiply(self, multiplier):
         self.chords = self.chords * multiplier
 
-
-@dataclass
-class MultiFormula:
-    formulas: Formula = field(default_factory=list)
+    def reset(self):
+        self.chords = []
 
 
+# VARIATION = TIMES TO REPEAT THE HEADER PATTERNS
 @dataclass
 class Variation:
-    singleFormulas : Optional[Formula] = field(default_factory=list)
-    multiFormulas : Optional[MultiFormula] = field(default_factory=list)
+    formulas : Optional[Formula] = field(default_factory=list)
 
 
 @dataclass
 class Paragraph:
-    alphabeticalNumber: str
-    variations : Optional[Variation] = field(default_factory=list)
-
+    variations : Variation = field(default_factory=list)
+    
 
 @dataclass
 class Unit:
@@ -137,14 +134,19 @@ class Book:
 
 
 @dataclass
-class EvolutionRange(int, Enum):
+class BookPart(int, Enum):
     book = 1
     chapter = 2
     unit = 3
     paragraph = 4
-    row = 5
-    column = 6
-    partMeasure = 7
+    subParagraph = 5
+    variation = 6
+    # row = 
+    # column = 
+    formula = 7
+    halfFormula = 8
+    oneThirdFormula = 9
+    oneFourthFormula = 10
 
 
 @dataclass
@@ -157,11 +159,16 @@ class EvolutionType(int, Enum):
 @dataclass
 class Evolution:
     type: EvolutionType
-    range: EvolutionRange
-    step: Optional[int] = 1
+    range: BookPart
+    stringStep: Optional[int] = 1
     chordNumber: int = field(default_factory=list)
     string: int = field(default_factory=list)
     
+
+@dataclass
+class CustomEvolution:
+    pass
+
 
 @dataclass
 class ArrowEvolution:
@@ -176,7 +183,9 @@ class TotalArrowEvolutions:
 @dataclass
 class TotalEvolutions:
     evolutions: Evolution = field(default_factory=list)
+    customEvolutions: CustomEvolution = field(default_factory=list)
     arrowEvolutions: TotalArrowEvolutions = field(default_factory=list)
+
 
 @dataclass
 class SerialNoteNumber:
@@ -207,32 +216,109 @@ class SerialNoteNumber:
         return currentNoteNumbersList
     
 
-    def goToTheNextStep(self):
-        self.currentStep += 1 if self.currentStep < len(self.serialNoteNumberList) else 0
-        self.currentNoteNumbers = self.getCurrentNoteNumbers()
-
-
     def __post_init__(self):
         self.serialNoteNumberList = self.getSerialNoteNumberList()
         self.currentStep = self.getCurrentStep()
         self.currentNoteNumbers = self.getCurrentNoteNumbers()
 
-
-    # 
-
-    # DEF save it
     
+    def goToTheNextStep(self):
+        if self.currentStep < len(self.serialNoteNumberList)-1:
+            self.currentStep += 1 
+        else:
+            self.currentStep = 0
+        self.currentNoteNumbers = self.getCurrentNoteNumbers()
 
-test1 = SerialNoteNumber()
-print(test1.serialNoteNumberList)
-print("-----------------------------------")
-print(test1.currentStep, test1.currentNoteNumbers)
-print("-----------------------------------")
-test1.goToTheNextStep()
-print(test1.currentStep, test1.currentNoteNumbers)
-print("-----------------------------------")
-test1.goToTheNextStep()
-print(test1.currentStep, test1.currentNoteNumbers)
+
+    def saveCurrentStep(self):
+        with open("data/current-serial-note-number.pkl", 'wb') as f:
+            pickle.dump(self.currentStep, f) 
+
+
+@dataclass
+class RenderType(int, Enum):
+    newBook = 1
+    bookExtension = 2
+    bookVariation = 3
+
+
+@dataclass
+class BookInfo():
+    title: str
+    subtitle: str
+    numberOfStrings: int
+
+
+@dataclass
+class NotationInfo():
+    numberOfFormulasPerPage: int
+    numberOfRowsPerPage: int
+    numberOfColumnsPerPage: int
+    numberOfChordsPerFormula: int
+
+    
+@dataclass
+class ParagraphOrder(int, Enum):
+    alphabetical = 1 # IA, IB, IC   ta A,B,C EINAI SUBPARAGRAPHS
+    doubleAlphabetical = 2 # IA, IIA, IIIA, IVA... IB, IIB, IIIB IVB...
+
+
+@dataclass
+class BeamType(int, Enum):
+    noLine = 1
+    singleLine = 2
+    doubleLine = 3
+
+
+@dataclass
+class HeadingType(int, Enum):
+    single = 1 #### VARIATION 1 ####
+    double = 2 #### F1A ## F2A ####
+    none: 3    
+
+
+@dataclass
+class HeaderRepeatFormat():
+     columns: int
+     rows: int
+
+
+@dataclass
+class Format():
+    paragraphType: ParagraphOrder
+    heading: HeadingType
+    beams: BeamType = field(default_factory=list)
+    headerRepeatFormat: HeaderRepeatFormat
+    numberOfParagraphsPerUnit: int
+    numberOfSubparagraphsPerUnit: int
+    headingParagraphLetterVisibility: bool = field(default_factory=bool)
+    numberOfVariationPages: int
+    formulaRepeatHorizontalFormat: bool # horizontal true, vertical false.   
+    formulaLetterVisibility: bool
+    variationTitleVisibility: bool
+    numberOfFormulaMeasures: int
+
+
+    def getHeadingParagraphLetterVisibility(self):
+        self.headingParagraphLetter = True if not self.formulaRepeatHorizontalFormat else False
+
+
+    def __post_init__(self):
+        self.headingParagraphLetter = self.headingParagraphLetterVisibility()
+
+
+@dataclass
+class SerialNumberRepeatingType(int, Enum):
+    firstCharacterToThird = 1
+    secondCharacterToThird = 2
+    firstCharacterDoubling = 3
+
+
+
+# sto render tha mpoun ta noumera kai h alfavitikh seira ton paragraphon dld I,II,III H IA,IB,IC..
+# H STA VARIATIONS A1, B1, C1 ή A1,A2,B1,B2,C1,C2
+
+
 
 if __name__ == '__main__':
     print("fml - model")
