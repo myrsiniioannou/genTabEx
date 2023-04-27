@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 import pickle
 
@@ -189,13 +189,18 @@ class TotalEvolutions:
 
 @dataclass
 class SerialNoteNumber:
+    twelveNoteLengthSerialNotes: bool = False
     serialNoteNumberList: list = field(default_factory=list)
-    currentStep: int = field(default_factory=int)
     currentNoteNumbers: list = field(default_factory=list)
-
+    currentStep: int = field(default_factory=int)
 
     def getSerialNoteNumberList(self):
-        with open("data/serial-note-numbers.txt") as serialNoteNumbersFile:
+        if self.twelveNoteLengthSerialNotes:
+            serialNumberFile = "data/12-note-length-serial-note-numbers.txt"
+        else:
+            serialNumberFile = "data/serial-note-numbers.txt"
+            
+        with open(serialNumberFile) as serialNoteNumbersFile:
             serialNoteNumbers = serialNoteNumbersFile.read()
             serialNoteNumbersListWithoutCommas = serialNoteNumbers.split("\n")
             serialNoteNumberList = []
@@ -205,8 +210,16 @@ class SerialNoteNumber:
         return serialNoteNumberList
     
 
+    def whichSerialNoteNumberFile(self):
+        if self.twelveNoteLengthSerialNotes:
+            currentStepFile = "data/current-serial-note-number-12-note-length.pkl"
+        else:
+            currentStepFile = "data/current-serial-note-number.pkl" 
+        return currentStepFile
+
+
     def getCurrentStep(self):
-        with open("data/current-serial-note-number.pkl", 'rb') as pklFile:
+        with open(self.whichSerialNoteNumberFile(), 'rb') as pklFile:
             currentStep = pickle.load(pklFile)
         return currentStep
 
@@ -231,8 +244,17 @@ class SerialNoteNumber:
 
 
     def saveCurrentStep(self):
-        with open("data/current-serial-note-number.pkl", 'wb') as f:
+        with open(self.whichSerialNoteNumberFile(), 'wb') as f:
             pickle.dump(self.currentStep, f) 
+
+
+
+@dataclass
+class CustomSerialNoteNumberList:
+    serialNoteNumberList:  List = field(default_factory=lambda: [])
+
+    def appendSerialNoteNumbersToList(self, x):
+        self.serialNoteNumberList.append(x)
 
 
 @dataclass
@@ -287,16 +309,16 @@ class HeaderRepeatFormat():
 class Format():
     paragraphType: ParagraphOrder
     heading: HeadingType
-    beams: BeamType = field(default_factory=list)
     headerRepeatFormat: HeaderRepeatFormat
     numberOfParagraphsPerUnit: int
     numberOfSubparagraphsPerUnit: int
-    headingParagraphLetterVisibility: bool = field(default_factory=bool)
     numberOfVariationPages: int
     formulaRepeatHorizontalFormat: bool # horizontal true, vertical false.   
     formulaLetterVisibility: bool
     variationTitleVisibility: bool
     numberOfFormulaMeasures: int
+    beams: BeamType = field(default_factory=list)
+    headingParagraphLetterVisibility: bool = field(default_factory=bool)
 
 
     def getHeadingParagraphLetterVisibility(self):
@@ -312,6 +334,8 @@ class SerialNumberRepeatingType(int, Enum):
     firstCharacterToThird = 1
     secondCharacterToThird = 2
     firstCharacterDoubling = 3
+    firstCharacterToThirdSecondCharacterToThird = 4
+    secondCharacterToThirdFirstCharacterToThird = 5
 
 
 

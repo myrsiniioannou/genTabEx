@@ -11,14 +11,14 @@ import pickle
 
 
 
-# with open("data/current-serial-note-number.pkl", 'wb') as f:  # open a text file
-#     pickle.dump(248, f) # serialize the list
+with open("data/current-serial-note-number-12-note-length.pkl", 'wb') as f:  # open a text file
+    pickle.dump(28, f) # serialize the list
 
 
-with open("data/current-serial-note-number.pkl", 'rb') as f:
-    b = pickle.load(f)
+# with open("data/current-serial-note-number-12-note-length.pkl", 'rb') as f:
+#     b = pickle.load(f)
 
-print(b)
+# print(b)
 
 # chord1 = Chord(duration=Duration.EIGHTH, accent=True, articulation=Articulation.DOWN)
 # chord2 = Chord(duration=Duration.SIXTEENTH,
