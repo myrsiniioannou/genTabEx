@@ -4,15 +4,15 @@
 # ο controller αποδέχεται τις εισαγωγές του χρήστη και αναθέτει την αναπαράσταση δεδομένων στο view
 
 
-
+print("PRINT FROM CONTROLLER FILE")
 
 
 import pickle
 
 
 
-with open("data/current-serial-note-number-12-note-length.pkl", 'wb') as f:  # open a text file
-    pickle.dump(28, f) # serialize the list
+# with open("data/current-serial-note-number-12-note-length.pkl", 'wb') as f:  # open a text file
+#     pickle.dump(28, f) # serialize the list
 
 
 # with open("data/current-serial-note-number-12-note-length.pkl", 'rb') as f:

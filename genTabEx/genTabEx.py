@@ -1,9 +1,8 @@
 import sys
 sys.path.append('modules')
-from controller import *
-
-
-
+sys.path.append('modules/model')
+from model import main
+from controller import controller
 
 
 def main():
