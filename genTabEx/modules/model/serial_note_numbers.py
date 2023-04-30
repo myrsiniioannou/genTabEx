@@ -26,7 +26,6 @@ class SerialNoteNumber:
                 serialNoteNumberList.append(element)
         return serialNoteNumberList
     
-
     def whichSerialNoteNumberFile(self):
         if self.twelveNoteLengthSerialNotes:
             currentStepFile = "data/current-serial-note-number-12-note-length.pkl"
@@ -34,23 +33,19 @@ class SerialNoteNumber:
             currentStepFile = "data/current-serial-note-number.pkl" 
         return currentStepFile
 
-
     def getCurrentStep(self):
         with open(self.whichSerialNoteNumberFile(), 'rb') as pklFile:
             currentStep = pickle.load(pklFile)
         return currentStep
-
-
+    
     def getCurrentNoteNumbers(self):
         currentNoteNumbersList = self.serialNoteNumberList[self.currentStep]
         return currentNoteNumbersList
     
-
     def __post_init__(self):
         self.serialNoteNumberList = self.getSerialNoteNumberList()
         self.currentStep = self.getCurrentStep()
         self.currentNoteNumbers = self.getCurrentNoteNumbers()
-
     
     def goToTheNextStep(self):
         if self.currentStep < len(self.serialNoteNumberList)-1:
@@ -58,7 +53,6 @@ class SerialNoteNumber:
         else:
             self.currentStep = 0
         self.currentNoteNumbers = self.getCurrentNoteNumbers()
-
 
     def saveCurrentStep(self):
         with open(self.whichSerialNoteNumberFile(), 'wb') as f:

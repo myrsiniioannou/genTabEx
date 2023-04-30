@@ -131,32 +131,3 @@ class Book:
     title: str
     subtitle: str
     chapters : Chapter = field(default_factory=list)
-
-
-
-
-chord1 = Chord(duration=Duration.EIGHTH, accent=False, articulation = Articulation.UP, box=False, header=[Fingering.A, Fingering.P],
-               note = Note(noteOnString=1, string=3), NoteSymbol=False, 
-               stringFingering = StringFingering(fingering=Fingering.I,string=6), stringfingeringWithNote=False,
-               slur= Slur(start=True, string=2, end=False), triplet=Triplet.FIRST)
-
-
-formula1 = Formula()
-formula2 = Formula()
-formula3 = Formula()
-formula4 = Formula()
-variation1 = Variation()
-variation2 = Variation()
-variation3 = Variation()
-variation4 = Variation()
-paragraph1 = Paragraph()
-paragraph2 = Paragraph()
-paragraph3 = Paragraph()
-paragraph4 = Paragraph()
-unit1 = Unit()
-unit2 = Unit()
-unit3 = Unit()
-unit4 = Unit()
-chapter1 = Chapter()
-chapter2 = Chapter()
-book = Book(stringNumber=6, title="First Book", subtitle="test1", chapters= [chapter1, chapter2])
