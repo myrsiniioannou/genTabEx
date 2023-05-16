@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 
 
 ############################################################################################################################
 # only the Model has access to the database. η διαχειριση των δεδομενων γινεται ΜΟΝΟ ΑΠΟ ΤΟ ΜΟΝΤΕΛΟ
+# σκεψου το μοντελο οτι μπορει να ειναι και αυτονομο, χωρις ui.
 ############################################################################################################################
 
 
@@ -101,33 +102,39 @@ class Formula:
         self.chords = []
 
 
-# VARIATION = TIMES TO REPEAT THE HEADER PATTERNS
-# DON'T CHANGE IT. IT MAKES SENSE IF YOU TAKE A LOOK AT THE BOOKS
 @dataclass
-class Variation:
-    formulas : Formula = field(default_factory=list)
+class FormulaList:
+    formulae: List[Formula]
+
+
+@dataclass
+class Page:
+    numberOfRows: int
+    numberOfColumns: int
+    formulaList: List[FormulaList]
 
 
 @dataclass
 class Paragraph:
-    variations : Variation = field(default_factory=list)
-    
+    pages: List[Page]
+
+
+@dataclass
+class ParagraphSection: # A, B
+    # αριθμος παραγραφων to length της λίστας απο κάτω
+    paragraphs : List[Paragraph]
+
 
 @dataclass
 class Unit:
-    number: int
-    paragraphs : Paragraph = field(default_factory=list)
+    paragraphSection: List[ParagraphSection]
 
 
 @dataclass
 class Chapter:
-    number: int
-    units : Unit = field(default_factory=list)
+    units: List[Unit]
 
 
 @dataclass
 class Book:
-    stringNumber: int
-    title: str
-    subtitle: str
-    chapters : Chapter = field(default_factory=list)
+    chapters: List[Chapter]

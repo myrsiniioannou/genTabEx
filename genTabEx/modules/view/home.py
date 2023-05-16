@@ -17,4 +17,5 @@ class GUI:
     root.title("genTabEx")
     root.mainloop()
 
-showGUI = GUI()
+if __name__ == '__main__':
+    print("run from home file in view directory")

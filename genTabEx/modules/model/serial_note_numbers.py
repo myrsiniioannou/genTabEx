@@ -1,15 +1,34 @@
 from dataclasses import dataclass, field
-from typing import Optional, List
+from typing import List
 from enum import Enum
 import pickle
 
 
 @dataclass
+class CustomSerialNoteNumberList:
+    serialNoteNumberList:  List = field(default_factory=lambda: [])
+
+    def appendSerialNoteNumbersToList(self, x):
+        self.serialNoteNumberList.append(x)
+
+
+@dataclass
+class SerialNumberRepeatingType(int, Enum):
+    firstCharacterAsThird = 1
+    secondCharacterAsThird = 2
+    firstCharacterDoubling = 3
+    firstCharacterAsThirdSecondCharacterAsThird = 4
+    secondCharacterAsThirdFirstCharacterAsThird = 5
+
+
+@dataclass
 class SerialNoteNumber:
-    twelveNoteLengthSerialNotes: bool = False
+    serialNumberRepeatingType: SerialNumberRepeatingType
+    twelveNoteLengthSerialNotes: bool = True
     serialNoteNumberList: list = field(default_factory=list)
     currentNoteNumbers: list = field(default_factory=list)
     currentStep: int = field(default_factory=int)
+    
 
     def getSerialNoteNumberList(self):
         if self.twelveNoteLengthSerialNotes:
@@ -57,20 +76,3 @@ class SerialNoteNumber:
     def saveCurrentStep(self):
         with open(self.whichSerialNoteNumberFile(), 'wb') as f:
             pickle.dump(self.currentStep, f) 
-
-
-@dataclass
-class CustomSerialNoteNumberList:
-    serialNoteNumberList:  List = field(default_factory=lambda: [])
-
-    def appendSerialNoteNumbersToList(self, x):
-        self.serialNoteNumberList.append(x)
-
-
-@dataclass
-class SerialNumberRepeatingType(int, Enum):
-    firstCharacterToThird = 1
-    secondCharacterToThird = 2
-    firstCharacterDoubling = 3
-    firstCharacterToThirdSecondCharacterToThird = 4
-    secondCharacterToThirdFirstCharacterToThird = 5

@@ -1,78 +1,51 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Dict, List
 from enum import Enum
+from domain_model import *
 
 
-@dataclass
-class RenderType(int, Enum):
-    newBook = 1
-    bookExtension = 2
-    bookVariation = 3
-
-
-@dataclass
-class NotationInfo():
-    numberOfFormulasPerPage: int
-    numberOfRowsPerPage: int
-    numberOfColumnsPerPage: int
-    numberOfChordsPerFormula: int
-
-    
 @dataclass
 class ParagraphOrderType(int, Enum):
-    alphabetical = 1 # IA, IB, IC   ta A,B,C EINAI SUBPARAGRAPHS
-    doubleAlphabetical = 2 # IA, IIA, IIIA, IVA... IB, IIB, IIIB IVB...
+    paragraphSectionFirst = 1 # IA, IB, IC
+    paragraphNumberFirst = 2 # IA, IIA, IIIA, IVA... IB, IIB, IIIB IVB...
 
 
 @dataclass
 class BeamType(int, Enum):
-    noLine = 1
+    defaut = 1
     singleLine = 2
     doubleLine = 3
 
 
 @dataclass
-class HeadingType(int, Enum):
-    single = 1 #### VARIATION 1 ####
-    double = 2 #### F1A ## F2A ####
-    none: 3    
+class HeaderRepeatFormat():
+    rows: int
+    columns: int
+    # gia paradeigma an epanalamvanetai to header sthn proth grammh rows=1,columns=2
 
 
 @dataclass
-class HeaderRepeatFormat():
-     columns: int
-     rows: int
+class FormulaFormat():
+    horizontalFormat: bool
+    formulaLetterVisibility: bool
 
 
 @dataclass
 class Format():
-    renderType: RenderType
-    notationInfo: NotationInfo
+    stringNumber: int
+    title: str
+    subtitle: str
+    numberOfRows: int
+    numberOfColumns: int
     paragraphOrderType: ParagraphOrderType
-    heading: HeadingType
     headerRepeatFormat: HeaderRepeatFormat
-    numberOfParagraphsPerUnit: int
-    numberOfSubparagraphsPerUnit: int
-    numberOfVariationPages: int
-
+    formulaFormat: FormulaFormat
+    beams: Dict[int, BeamType] # int is the chord number of the formula
+    numberOfFormulaRepeats: List[int] # each element is the number that each formula should repeat
+    numberOfFormulasPerPage: list = field(default_factory=list)
     
-    formulaRepeatHorizontalFormat: bool # horizontal true, vertical false.   
-    formulaLetterVisibility: bool
-    variationTitleVisibility: bool
-    numberOfFormulaMeasures: int
-    beams: BeamType = field(default_factory=list)
-    headingParagraphLetterVisibility: bool = field(default_factory=bool)
-
-    def getHeadingParagraphLetterVisibility(self):
-        self.headingParagraphLetter = True if not self.formulaRepeatHorizontalFormat else False
+    def getNumberOfFormulasPerPage(self):
+        return self.numberOfColumns * self.numberOfRows
 
     def __post_init__(self):
-        self.headingParagraphLetter = self.headingParagraphLetterVisibility()
-
-
-bookFormat = Format(renderType=RenderType.newBook, 
-                    notationInfo=NotationInfo(numberOfFormulasPerPage=1, numberOfRowsPerPage=6, numberOfColumnsPerPage=2, numberOfChordsPerFormula=12),
-                    paragraphOrderType=ParagraphOrderType.alphabetical, heading=HeadingType.double,
-                    headerRepeatFormat=HeaderRepeatFormat(columns=2, rows=4), numberOfParagraphsPerUnit = 2,
-                    numberOfSubparagraphsPerUnit=1, numberOfVariationPages=3)
-
+        self.numberOfFormulasPerPage = self.getNumberOfFormulasPerPage()
