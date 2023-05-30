@@ -3,12 +3,6 @@ from typing import Optional, List
 from enum import Enum
 
 
-############################################################################################################################
-# only the Model has access to the database. η διαχειριση των δεδομενων γινεται ΜΟΝΟ ΑΠΟ ΤΟ ΜΟΝΤΕΛΟ
-# σκεψου το μοντελο οτι μπορει να ειναι και αυτονομο, χωρις ui.
-############################################################################################################################
-
-
 @dataclass
 class Articulation(str, Enum):
     UP = "up"
@@ -87,6 +81,7 @@ class Chord:
 
 @dataclass
 class Formula:
+    index: int
     chords: Chord = field(default_factory=list)
 
     def addChordToFormula(self, Chord):
@@ -106,34 +101,26 @@ class Formula:
 class FormulaList:
     formulae: List[Formula]
 
-
 @dataclass
 class Page:
-    numberOfRows: int
-    numberOfColumns: int
     formulaList: List[FormulaList]
-
 
 @dataclass
 class Paragraph:
     pages: List[Page]
 
-
 @dataclass
-class ParagraphSection: # A, B
-    # αριθμος παραγραφων to length της λίστας απο κάτω
+class Section: # A, B
     paragraphs : List[Paragraph]
-
+    variationRepeats: int
 
 @dataclass
 class Unit:
-    paragraphSection: List[ParagraphSection]
-
+    sections: List[Section]
 
 @dataclass
 class Chapter:
     units: List[Unit]
-
 
 @dataclass
 class Book:
