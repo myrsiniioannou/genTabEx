@@ -9,6 +9,7 @@ from render import *
 from serial_note_numbers import *
 from data_generation import *
 import json
+import itertools
 
 
 
@@ -68,7 +69,7 @@ format1 = Format(
                 headerRepeatFormat=HeaderRepeatFormat(rows=1,columns=2),
                 horizontalFormat=False,
                 variationRepeats = [],
-                formulaRepeats=[2,2,2,2,2,2,6,6],
+                formulaRepeats=[6,6,6,12,6,6,6,6],
                 beams={6:BeamType.doubleLine, 10:BeamType.singleLine}
                 )
 
@@ -77,7 +78,7 @@ format1 = Format(
 
 
 
-#############################################3 DATA GENERATION
+################################ DATA GENERATION ################################
 
 
 
@@ -91,74 +92,99 @@ def flattenList(lst):
     return [item for sublist in lst for item in sublist]
 
 
-def transposeList(lst, format):
-    print(lst)
-    for page in lst:
-        columnFormulaLists = [[] for i in range(format.numberOfRows)]
-        print(page)
-        print(columnFormulaLists)
-    # flat_list = flattenList(lst)
-    # #print(flat_list)
-    # pagesList = list(generatepartition(flat_list, format.numberOfFormulasPerPage))
-    # print(pagesList)
-    # transposedList = []
-    # for page in pagesList:
-    #     print(page)
-    #     columnFomrulaLists = [[] for i in range(format.numberOfRows)]
-    #     print(columnFomrulaLists)
-    #     #for index, formula in enumerate(page):
+def verticalFormatList(formulaelst, format):
+    print(format.numberOfFormulasPerPage)
 
 
-    #     print("---------")
-        #transposedList.append(columnFomrulaLists)
-    
-    #print("transposedList:", flattenList(transposedList))
-           
-
-
-    # partitionList2ndLayer = [list(generatepartition(page, format.numberOfColumns)) for page in pagesList] 
-    #print(partitionList2ndLayer)
-        # try:
-        #     T_list = [[[j[i] for j in z] for i in range(format.numberOfRows)] for z in pagesList] 
-        #     transposedList = list(generatepartition(flattenList(flattenList(T_list)), format.numberOfFormulasPerPage))
-        # except Exception:
-        #     print("Wrong number of formula repeats according to number of rows and columns")
-        #     transposedList = None
-        # print(transposedList)
-    
-    return None
-
+def errorMessage():
+    print("Error with the lengtht of formula repeats. Check and try again.")
 
 
 def generateParagraph(formulae, format):
+    
     #fomrulaList = [[formula]*format.formulaRepeats[index] for index, formula in enumerate(formulae)]
+
     formulaList = [[formula.index]*format.formulaRepeats[index] for index, formula in enumerate(formulae)]
     flat_list = flattenList(formulaList)
     pageListOfFormulae = list(generatepartition(flat_list, format.numberOfFormulasPerPage))
+    finalList = pageListOfFormulae.copy()
+
     if not format.horizontalFormat:
-        pageListOfFormulae = transposeList(pageListOfFormulae, format)
-    return pageListOfFormulae
+
+        
+        horizontalFormulaList = []
+        
+
+        
+        # Divide the formula arrays into the number of rows
+        for formula in formulaList:
+            if len(formula) != format.numberOfRows:
+                dividedList = list(generatepartition(formula, format.numberOfRows))
+                horizontalFormulaList.extend(dividedList)
+            else:
+                horizontalFormulaList.append(formula)
 
 
 
+        # Divide formulas into pages (divide by the total number of Columns per page)
+        pageListOfFormulae = list(generatepartition(horizontalFormulaList, format.numberOfColumns))
+
+
+
+
+
+        # Transpose the list of formulas (for vertical format)
+        transposedPageListOfFormulae = []
+        try:
+            for page in pageListOfFormulae:
+                columnList = []
+                for element in range(format.numberOfRows):
+                    for formula in page:
+                        columnList.append(formula[element])
+                transposedPageListOfFormulae.append(columnList)
+
+        except:
+            errorMessage()
+
+
+        finalList = transposedPageListOfFormulae.copy()
+
+
+
+    return finalList
+
+
+
+def checkFormatInputForErrors(format):
+    error = True
+    for repeats in format.formulaRepeats:
+        if ((format.horizontalFormat and not repeats % format.numberOfColumns == 0)
+            or
+            (not format.horizontalFormat and not repeats % format.numberOfRows == 0)):
+            errorMessage()
+            error = False
+            break
+    return error
 
 
 
 def generatePart(formulaList, partType, format):
-    # if  partType == "Book":
-    #     partType = generateBook(formulaList.formulae, format)
-    # elif  partType == "Chapter":
-    #     partType = generateChapter(formulaList.formulae, format)
-    # elif  partType == "Unit":
-    #     partType = generateUnit(formulaList.formulae, format)
-    # elif  partType == "Section": 
-    #     partType = generateSection(formulaList.formulae, format)
-    if  partType  == "Paragraph":
-        partType = generateParagraph(formulaList.formulae, format)
-    return partType
+    part = None
+    if checkFormatInputForErrors(format):
+        # if  partType == "Book":
+        #     part = generateBook(formulaList.formulae, format)
+        # elif  partType == "Chapter":
+        #     part = generateChapter(formulaList.formulae, format)
+        # elif  partType == "Unit":
+        #     part = generateUnit(formulaList.formulae, format)
+        # elif  partType == "Section": 
+        #     part = generateSection(formulaList.formulae, format)
+        if  partType  == "Paragraph":
+            part = generateParagraph(formulaList.formulae, format)
+    return part
 
 
-
+### Grapsta ligo kalutera sto generateParagraph
 
 
 partType1 = "Book"

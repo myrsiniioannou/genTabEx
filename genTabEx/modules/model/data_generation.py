@@ -3,10 +3,7 @@ from evolutions import *
 from format import *
 from serial_note_numbers import *
 from dataclasses import dataclass
-
-
-
-
+import itertools
 
 
 

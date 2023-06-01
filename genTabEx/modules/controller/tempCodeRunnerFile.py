@@ -1,1 +1,2 @@
-2
+    # if  partType  == "Paragraph":
+    #     partType = generateParagraph(formulaList.formulae, format)
