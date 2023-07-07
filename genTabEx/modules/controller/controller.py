@@ -137,10 +137,6 @@ def generateParagraph(formulae, format):
     return finalList
 
 
-
-def generateSection(formulae, format):
-    pass
-
 def checkFormatInputForErrors(format):
     error = True
     for repeats in format.formulaRepeats:
