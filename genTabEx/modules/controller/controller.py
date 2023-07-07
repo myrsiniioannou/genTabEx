@@ -9,7 +9,6 @@ from render import *
 from serial_note_numbers import *
 from data_generation import *
 import json
-import itertools
 
 
 
@@ -69,7 +68,7 @@ format1 = Format(
                 headerRepeatFormat=HeaderRepeatFormat(rows=1,columns=2),
                 horizontalFormat=False,
                 variationRepeats = [],
-                formulaRepeats=[6,6,6,12,6,6,6,6],
+                formulaRepeats=[6,6,6,6,6,6,6,6],
                 beams={6:BeamType.doubleLine, 10:BeamType.singleLine}
                 )
 
@@ -79,8 +78,6 @@ format1 = Format(
 
 
 ################################ DATA GENERATION ################################
-
-
 
 
 def generatepartition(lst, size):
@@ -100,60 +97,49 @@ def errorMessage():
     print("Error with the lengtht of formula repeats. Check and try again.")
 
 
-def generateParagraph(formulae, format):
-    
-    #fomrulaList = [[formula]*format.formulaRepeats[index] for index, formula in enumerate(formulae)]
+def transposeTheListOfFormulas(pageListOfFormulae, format):
+    transposedPageListOfFormulae = []
+    try:
+        for page in pageListOfFormulae:
+            columnList = []
+            for element in range(format.numberOfRows):
+                for formula in page:
+                    columnList.append(formula[element])
+            transposedPageListOfFormulae.append(columnList)
+    except:
+        errorMessage()
+    return transposedPageListOfFormulae
 
-    formulaList = [[formula.index]*format.formulaRepeats[index] for index, formula in enumerate(formulae)]
+
+def divideTheFormulaArraysIntoTheNumberOfRows(formulaList, format):
+    horizontalFormulaList = []
+    for formula in formulaList:
+        if len(formula) != format.numberOfRows:
+            dividedList = list(generatepartition(formula, format.numberOfRows))
+            horizontalFormulaList.extend(dividedList)
+        else:
+            horizontalFormulaList.append(formula)
+    return horizontalFormulaList
+
+
+def verticalFormatTransformation(formulaList, format):
+    horizontalFormulaList = divideTheFormulaArraysIntoTheNumberOfRows(formulaList, format)
+    pageListOfFormulae = list(generatepartition(horizontalFormulaList, format.numberOfColumns))
+    transposedPageListOfFormulae = transposeTheListOfFormulas(pageListOfFormulae, format)
+    return transposedPageListOfFormulae
+
+
+def generateParagraph(formulae, format):
+    formulaList = [[formula]*format.formulaRepeats[index] for index, formula in enumerate(formulae)]
     flat_list = flattenList(formulaList)
     pageListOfFormulae = list(generatepartition(flat_list, format.numberOfFormulasPerPage))
-    finalList = pageListOfFormulae.copy()
-
-    if not format.horizontalFormat:
-
-        
-        horizontalFormulaList = []
-        
-
-        
-        # Divide the formula arrays into the number of rows
-        for formula in formulaList:
-            if len(formula) != format.numberOfRows:
-                dividedList = list(generatepartition(formula, format.numberOfRows))
-                horizontalFormulaList.extend(dividedList)
-            else:
-                horizontalFormulaList.append(formula)
-
-
-
-        # Divide formulas into pages (divide by the total number of Columns per page)
-        pageListOfFormulae = list(generatepartition(horizontalFormulaList, format.numberOfColumns))
-
-
-
-
-
-        # Transpose the list of formulas (for vertical format)
-        transposedPageListOfFormulae = []
-        try:
-            for page in pageListOfFormulae:
-                columnList = []
-                for element in range(format.numberOfRows):
-                    for formula in page:
-                        columnList.append(formula[element])
-                transposedPageListOfFormulae.append(columnList)
-
-        except:
-            errorMessage()
-
-
-        finalList = transposedPageListOfFormulae.copy()
-
-
-
+    finalList = verticalFormatTransformation(formulaList, format) if not format.horizontalFormat else pageListOfFormulae.copy()
     return finalList
 
 
+
+def generateSection(formulae, format):
+    pass
 
 def checkFormatInputForErrors(format):
     error = True
@@ -184,15 +170,43 @@ def generatePart(formulaList, partType, format):
     return part
 
 
-### Grapsta ligo kalutera sto generateParagraph
 
 
-partType1 = "Book"
+# 1. section generations
+# 2. single / multiformula. wtf is this 
+# 3. apply evolutions
+#    4. Export JSON
+# 5. book variations
+# 6. extensions - continue process
+# 7. render
+#     8. Make the stupid new symbol
+#     9. auto build the sizes
+# 10. Auto first page with each unit etc. check the example
+# 11. finalize the Book
+#     12. combine chapters
+#     13. introduction (check the word document)
+#     14. One bar in unit page
+#     15. Pagination
+#     16. covers
+#     17. Pdf
+# 18. Make the UI
+# 19. Setup file on git
+#     20.Add musescore
+#     21.test installation
+#     22.Auto create folders
+#     23. Picke file position ->0
+#     24. VSCODE paths. Change all the paths
+#     25. Test on empty new environment
+
+
+
+
+
 partType2 = "Chapter"
 partType3 = "Unit"
 partType4 = "Section"
 partType5 = "Paragraph"
-generation = generatePart(formulaList1, partType5, format1)
+generation = generatePart(formulaList1, partType4, format1)
 print(generation)
 
 
@@ -201,11 +215,6 @@ print(generation)
 outputDirectory = r"C:\Users\merse\Desktop\genTabEx\genTabEx\modules\model\JSONTEST.json"
 with open(outputDirectory, 'w', encoding='utf-8') as f:
     json.dump(generation, f, indent=3, default=vars, ensure_ascii=False)
-
-
-
-if __name__ == '__main__':
-    pass
 
 
 

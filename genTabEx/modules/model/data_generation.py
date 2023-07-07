@@ -12,5 +12,3 @@ import itertools
 # outputDirectory = r"C:\Users\merse\Desktop\genTabEx\JSONTEST.json"
 # with open(outputDirectory, 'w', encoding='utf-8') as f:
 #     json.dump(generation, f, indent=3, default=vars, ensure_ascii=False)
-
-
