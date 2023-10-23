@@ -1,6 +1,35 @@
 import os
 import itertools
 import copy
+import random
+from dataclasses import dataclass
+
+
+@dataclass
+class SerialNumber:
+    currentIndex = int
+    currentNumber = int
+    serialNoteNumberList = list[int]
+
+    def __init__(self, serialNoteNumbers, serialNumberType):
+        divisor = 8 if serialNumberType == "no repeat" else 12
+        divisorList = []
+        [
+            divisorList.append(idx)
+            for idx, element in enumerate(serialNoteNumbers)
+            if idx % divisor == 0
+        ]
+        self.currentIndex = random.choice(divisorList)
+        self.serialNoteNumberList = serialNoteNumbers
+        self.currentNumber = self.serialNoteNumberList[self.currentIndex]
+
+    def increment(self):
+        if self.currentIndex < len(self.serialNoteNumberList) - 1:
+            self.currentIndex += 1
+            self.currentNumber = self.serialNoteNumberList[self.currentIndex]
+        else:
+            self.currentIndex = 0
+            self.currentNumber = self.serialNoteNumberList[self.currentIndex]
 
 
 def findTheListOfMuseScoreFiles(bookTitle):
@@ -92,7 +121,7 @@ def saveNewMuseScoreFileWithEmbeddedSerialNoteNumbers(museScoreFile, museScoreFi
 
 
 def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
-    museScoreFile, museScoreFilePath, textOccurrencesInFile, finalSerialNoteNumbers
+    museScoreFile, museScoreFilePath, textOccurrencesInFile, serialNumber
 ):
     def findXmlToSubstitute(museScoreFile, occurrence):
         xmlToSubstitute = ""
@@ -100,7 +129,7 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
         while (
             ("</pitch>" not in xmlToSubstitute)
             or ("</fret>" not in xmlToSubstitute)
-            or ("</tpc>" not in xmlToSubstitute)
+            # or ("</tpc>" not in xmlToSubstitute)
         ):
             xmlToSubstitute += museScoreFile[occurrence + charactherCount]
             charactherCount += 1
@@ -126,14 +155,14 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
         # We substitute/embed only notes with fret number equal to zero
         return fretNumber == 0
 
-    def findCurrentSerialNumber():
-        return 4
-
     def substitudeTagNumber(xmlToSubstitute, numberToEmbed, openingTag, closingTag):
         openingTagIndex = xmlToSubstitute.find(openingTag)
         closingTagIndex = xmlToSubstitute.find(closingTag) + len(closingTag)
         stringToSubstitute = xmlToSubstitute[openingTagIndex:closingTagIndex]
-        stringToEmbed = openingTag + str(numberToEmbed) + closingTag
+        if openingTag != "<tpc>" and closingTag != "</tpc>":
+            stringToEmbed = openingTag + str(numberToEmbed) + closingTag
+        else:
+            stringToEmbed = ""
         XMLwithTagReplaced = xmlToSubstitute.replace(stringToSubstitute, stringToEmbed)
         return XMLwithTagReplaced
 
@@ -141,21 +170,24 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
         xmlToSubstitute,
         fretNumberToSubstitute,
         pitchNumberToSubstitute,
-        tpcNumberToSubstitute,
+        # tpcNumberToSubstitute,
+        serialNumber,
     ):
-        serialNumberToEmbed = findCurrentSerialNumber()
+        fretNumberToEmbed = fretNumberToSubstitute + serialNumber
 
-        fretNumberToEmbed = fretNumberToSubstitute + serialNumberToEmbed
         xmlToSubstitute = substitudeTagNumber(
             xmlToSubstitute, fretNumberToEmbed, "<fret>", "</fret>"
         )
 
-        pitchNumberToEmbed = pitchNumberToSubstitute + serialNumberToEmbed
+        pitchNumberToEmbed = pitchNumberToSubstitute + serialNumber
+
         xmlToSubstitute = substitudeTagNumber(
             xmlToSubstitute, pitchNumberToEmbed, "<pitch>", "</pitch>"
         )
 
-        tpcNumberToEmbed = tpcNumberToSubstitute + serialNumberToEmbed
+        # tpcNumberToEmbed = copy.deepcopy(tpcNumberToSubstitute)
+        tpcNumberToEmbed = ""
+
         xmlToSubstitute = substitudeTagNumber(
             xmlToSubstitute, tpcNumberToEmbed, "<tpc>", "</tpc>"
         )
@@ -173,15 +205,16 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
                 xmlToSubstitute, "<pitch>", "</pitch>"
             )
 
-            tpcNumberToSubstitute = findNumberToSubstitute(
-                xmlToSubstitute, "<tpc>", "</tpc>"
-            )
-
+            # tpcNumberToSubstitute = findNumberToSubstitute(
+            #     xmlToSubstitute, "<tpc>", "</tpc>"
+            # )
+            currentSerialNumber = serialNumber.currentNumber
             textToEmbed = findTextToEmbed(
                 xmlToSubstitute,
                 fretNumberToSubstitute,
                 pitchNumberToSubstitute,
-                tpcNumberToSubstitute,
+                # tpcNumberToSubstitute,
+                currentSerialNumber,
             )
 
             museScoreFile = (
@@ -189,12 +222,12 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
                 + textToEmbed
                 + museScoreFile[occurrence + len(xmlToSubstitute) :]
             )
+
+            serialNumber.increment()
     saveNewMuseScoreFileWithEmbeddedSerialNoteNumbers(museScoreFile, museScoreFilePath)
 
 
-def substituteSerialNoteNumbersOnAllMuseScoreFiles(
-    museScoreFiles, finalSerialNoteNumbers
-):
+def substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, serialNumber):
     for index, museScoreFilePath in enumerate(museScoreFiles):
         print(f"Embedding Serial Notes to file {index+1}/{len(museScoreFiles)}...")
         with open(museScoreFilePath, "r") as file:
@@ -209,7 +242,7 @@ def substituteSerialNoteNumbersOnAllMuseScoreFiles(
                 museScoreFile,
                 museScoreFilePath,
                 textOccurrencesInFile,
-                finalSerialNoteNumbers,
+                serialNumber,
             )
     print("Serial Note Substitution Done!")
 
@@ -220,13 +253,13 @@ def main(bookTitle, serialNumberType):
     finalSerialNoteNumbers = findFinalSerialNumberList(
         serialNoteNumberList, serialNumberType
     )
-    print(len(finalSerialNoteNumbers))
-    # substituteSerialNoteNumbersOnAllMuseScoreFiles(
-    #     museScoreFiles, finalSerialNoteNumbers
-    # )
+    initialSerialNumber = SerialNumber(finalSerialNoteNumbers, serialNumberType)
+    substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, initialSerialNumber)
 
 
 # 1. να παιρνει σε λουπα τους serial note αριθμους και να τους αντικαθιστα
+
+
 # 2. να φτιαξω το μαλακισμενο συμβολο νοτας με το νουμερο μεσα - ελεος
 # 3. να φτιαξω το header fingering
 # 4. να κανει εξπορτ το pdf του musescore
@@ -245,6 +278,6 @@ if __name__ == "__main__":
     # "second-to-third-first-to-second"
     # "first-to-second-second-to-third"
 
-    serialNumberType = "first-to-second-second-to-third"
+    serialNumberType = "no repeat"
 
     main(bookTitle, serialNumberType)
