@@ -220,6 +220,7 @@ def main(bookTitle, serialNumberType):
     finalSerialNoteNumbers = findFinalSerialNumberList(
         serialNoteNumberList, serialNumberType
     )
+    print(len(finalSerialNoteNumbers))
     # substituteSerialNoteNumbersOnAllMuseScoreFiles(
     #     museScoreFiles, finalSerialNoteNumbers
     # )
@@ -237,13 +238,12 @@ if __name__ == "__main__":
     bookTitle = "book-IX"
 
     # 2. Select the type of serial numbers repeat
-
-    # no repeat
-    # first-to-third
-    # second-to-third
-    # first-to-second
-    # second-to-third-first-to-second
-    # first-to-second-second-to-third
+    # "no repeat"
+    # "first-to-third"
+    # "second-to-third"
+    # "first-to-second"
+    # "second-to-third-first-to-second"
+    # "first-to-second-second-to-third"
 
     serialNumberType = "first-to-second-second-to-third"
 
