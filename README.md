@@ -14,7 +14,7 @@
 <img src="/img/digitizedTablature.jpg" alt="Digitized Tablature" title="Digitized Tablature"  width="400px">
 
 
-## Installation
+<!-- ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install Generative Tablature Exercises.
 
@@ -30,7 +30,7 @@ import generative-tablature-exercises
 # example will be given here
 generative-tablature.example1
 
-```
+``` -->
 
 
 ## License

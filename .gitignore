@@ -1,7 +1,4 @@
 /implementation.txt
-/genTabEx/modules/__pycache__
 /genTabEx/tempCodeRunnerFile
 /genTabEx/.vscode
-/genTabEx/modules/model/__pycache__
-/genTabEx/modules/view/__pycache__
-/genTabEx/modules/controller/__pycache__
+/genTabEx/modules
