@@ -32,6 +32,10 @@ class SerialNumber:
             self.currentNumber = self.serialNoteNumberList[self.currentIndex]
 
 
+def flatten(listToFlatten):
+    return [item for sublist in listToFlatten for item in sublist]
+
+
 def findTheListOfMuseScoreFiles(bookTitle):
     listOfMSFiles = []
     bookFolder = os.path.join("books", bookTitle)
@@ -59,26 +63,50 @@ def findFinalSerialNumberList(serialNoteNumberList, serialNumberType):
         ]
         return oneDigitList
 
-    def duplicateAndRearrangeTripleDigitLists(flatList, a, b, c, d, e, f):
+    def duplicateAndRearrangeTripleDigitLists(
+        flatList,
+        first_number,
+        second_number,
+        third_number,
+        fourth_number,
+        fifth_number,
+        sixth_number,
+    ):
         threeDigitTuple = [
-            (int(str(idx)[a:b]), int(str(idx)[c:d]), int(str(idx)[e:f]))
+            (
+                int(str(idx)[first_number:second_number]),
+                int(str(idx)[third_number:fourth_number]),
+                int(str(idx)[fifth_number:sixth_number]),
+            )
             for idx in flatList
         ]
         oneDigitList = [item for digit in threeDigitTuple for item in digit]
         return oneDigitList
 
     def duplicateAndRearrangeSixDigitLists(
-        flatList, a, b, c, d, e, f, g, h, i, j, k, m
+        flatList,
+        first_number,
+        second_number,
+        third_number,
+        fourth_number,
+        fifth_number,
+        sixth_number,
+        seventh_number,
+        eighth_number,
+        nineth_number,
+        tenth_number,
+        eleventh_number,
+        twelveth_number,
     ):
         sixDigitSubslists = []
         for idx in range(0, len(flatList) - 1, 2):
             sixDigitTuple = [
-                int(str(flatList[idx])[a:b]),
-                int(str(flatList[idx])[c:d]),
-                int(str(flatList[idx])[e:f]),
-                int(str(flatList[idx + 1])[g:h]),
-                int(str(flatList[idx + 1])[i:j]),
-                int(str(flatList[idx + 1])[k:m]),
+                int(str(flatList[idx])[first_number:second_number]),
+                int(str(flatList[idx])[third_number:fourth_number]),
+                int(str(flatList[idx])[fifth_number:sixth_number]),
+                int(str(flatList[idx + 1])[seventh_number:eighth_number]),
+                int(str(flatList[idx + 1])[nineth_number:tenth_number]),
+                int(str(flatList[idx + 1])[eleventh_number:twelveth_number]),
             ]
             sixDigitSubslists.append(sixDigitTuple)
         oneDigitList = [item for digit in sixDigitSubslists for item in digit]
@@ -88,29 +116,139 @@ def findFinalSerialNumberList(serialNoteNumberList, serialNumberType):
     if serialNumberType == "no repeat":
         serialNoteNumbers = noRepeatSerialNumbers(flatList)
     elif serialNumberType == "first-to-third":
-        a, b, c, d, e, f = 0, 1, 1, 2, 0, 1
+        (
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
+        ) = (
+            0,
+            1,
+            1,
+            2,
+            0,
+            1,
+        )
         serialNoteNumbers = duplicateAndRearrangeTripleDigitLists(
-            flatList, a, b, c, d, e, f
+            flatList,
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
         )
     elif serialNumberType == "second-to-third":
-        a, b, c, d, e, f = 0, 1, 1, 2, 1, 2
+        (
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
+        ) = (
+            0,
+            1,
+            1,
+            2,
+            1,
+            2,
+        )
         serialNoteNumbers = duplicateAndRearrangeTripleDigitLists(
-            flatList, a, b, c, d, e, f
+            flatList,
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
         )
     elif serialNumberType == "first-to-second":
-        a, b, c, d, e, f = 0, 1, 0, 1, 1, 2
+        (
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
+        ) = (
+            0,
+            1,
+            0,
+            1,
+            1,
+            2,
+        )
         serialNoteNumbers = duplicateAndRearrangeTripleDigitLists(
-            flatList, a, b, c, d, e, f
+            flatList,
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
         )
     elif serialNumberType == "second-to-third-first-to-second":
-        a, b, c, d, e, f, g, h, i, j, k, m = (0, 1, 1, 2, 1, 2, 0, 1, 0, 1, 1, 2)
+        (
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
+            seventh_number,
+            eighth_number,
+            nineth_number,
+            tenth_number,
+            eleventh_number,
+            twelveth_number,
+        ) = (0, 1, 1, 2, 1, 2, 0, 1, 0, 1, 1, 2)
         serialNoteNumbers = duplicateAndRearrangeSixDigitLists(
-            flatList, a, b, c, d, e, f, g, h, i, j, k, m
+            flatList,
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
+            seventh_number,
+            eighth_number,
+            nineth_number,
+            tenth_number,
+            eleventh_number,
+            twelveth_number,
         )
     elif serialNumberType == "first-to-second-second-to-third":
-        a, b, c, d, e, f, g, h, i, j, k, m = (0, 1, 0, 1, 1, 2, 0, 1, 1, 2, 1, 2)
+        (
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
+            seventh_number,
+            eighth_number,
+            nineth_number,
+            tenth_number,
+            eleventh_number,
+            twelveth_number,
+        ) = (0, 1, 0, 1, 1, 2, 0, 1, 1, 2, 1, 2)
         serialNoteNumbers = duplicateAndRearrangeSixDigitLists(
-            flatList, a, b, c, d, e, f, g, h, i, j, k, m
+            flatList,
+            first_number,
+            second_number,
+            third_number,
+            fourth_number,
+            fifth_number,
+            sixth_number,
+            seventh_number,
+            eighth_number,
+            nineth_number,
+            tenth_number,
+            eleventh_number,
+            twelveth_number,
         )
     return serialNoteNumbers
 
@@ -126,11 +264,7 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
     def findXmlToSubstitute(museScoreFile, occurrence):
         xmlToSubstitute = ""
         charactherCount = 0
-        while (
-            ("</pitch>" not in xmlToSubstitute)
-            or ("</fret>" not in xmlToSubstitute)
-            # or ("</tpc>" not in xmlToSubstitute)
-        ):
+        while ("</pitch>" not in xmlToSubstitute) or ("</fret>" not in xmlToSubstitute):
             xmlToSubstitute += museScoreFile[occurrence + charactherCount]
             charactherCount += 1
         return xmlToSubstitute
@@ -162,7 +296,7 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
         if openingTag != "<tpc>" and closingTag != "</tpc>":
             stringToEmbed = openingTag + str(numberToEmbed) + closingTag
         else:
-            stringToEmbed = ""
+            stringToEmbed = " " * len(stringToSubstitute)
         XMLwithTagReplaced = xmlToSubstitute.replace(stringToSubstitute, stringToEmbed)
         return XMLwithTagReplaced
 
@@ -170,7 +304,6 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
         xmlToSubstitute,
         fretNumberToSubstitute,
         pitchNumberToSubstitute,
-        # tpcNumberToSubstitute,
         serialNumber,
     ):
         fretNumberToEmbed = fretNumberToSubstitute + serialNumber
@@ -185,7 +318,6 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
             xmlToSubstitute, pitchNumberToEmbed, "<pitch>", "</pitch>"
         )
 
-        # tpcNumberToEmbed = copy.deepcopy(tpcNumberToSubstitute)
         tpcNumberToEmbed = ""
 
         xmlToSubstitute = substitudeTagNumber(
@@ -205,15 +337,11 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
                 xmlToSubstitute, "<pitch>", "</pitch>"
             )
 
-            # tpcNumberToSubstitute = findNumberToSubstitute(
-            #     xmlToSubstitute, "<tpc>", "</tpc>"
-            # )
             currentSerialNumber = serialNumber.currentNumber
             textToEmbed = findTextToEmbed(
                 xmlToSubstitute,
                 fretNumberToSubstitute,
                 pitchNumberToSubstitute,
-                # tpcNumberToSubstitute,
                 currentSerialNumber,
             )
 
@@ -227,17 +355,22 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
     saveNewMuseScoreFileWithEmbeddedSerialNoteNumbers(museScoreFile, museScoreFilePath)
 
 
+def findTextOccurencesInMuseScoreFile(museScoreFile):
+    textReference = "<text>x</text>"
+    textOccurrencesInFile = [
+        i
+        for i in range(len(museScoreFile))
+        if museScoreFile.startswith(textReference, i)
+    ]
+    return textOccurrencesInFile
+
+
 def substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, serialNumber):
     for index, museScoreFilePath in enumerate(museScoreFiles):
         print(f"Embedding Serial Notes to file {index+1}/{len(museScoreFiles)}...")
-        with open(museScoreFilePath, "r") as file:
-            museScoreFile = file.read()
-            textReference = "<text>x</text>"
-            textOccurrencesInFile = [
-                i
-                for i in range(len(museScoreFile))
-                if museScoreFile.startswith(textReference, i)
-            ]
+        with open(museScoreFilePath, "r") as museScoreRawFile:
+            museScoreFile = museScoreRawFile.read()
+            textOccurrencesInFile = findTextOccurencesInMuseScoreFile(museScoreFile)
             findXmlToSubstituteAndEmbedForEachMuseScoreFile(
                 museScoreFile,
                 museScoreFilePath,
@@ -247,7 +380,68 @@ def substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, serialNumber)
     print("Serial Note Substitution Done!")
 
 
-def main(bookTitle, serialNumberType):
+def generateHeaderFingeringList(headerFingerings, headerFingeringMultiplications):
+    def generateUnitsAndChapters(paragraph, multiplications):
+        allParagraphs = (flatten(paragraph)) * multiplications["paragraphs"]
+        allUnits = flatten(allParagraphs * multiplications["units"])
+        allChapters = allUnits * multiplications["chapters"]
+        return flatten(allChapters)
+
+    def findAllpageFingerings(measureFingerings):
+        pageFingerings = []
+        rowfingerings = []
+        for idx, element in enumerate(measureFingerings):
+            rowfingerings.append(element)
+            if (idx + 1) % headerFingeringMultiplications["columns"] == 0:
+                pageFingerings.append(rowfingerings)
+                rowfingerings = []
+        return pageFingerings
+
+    paragraph = []
+    for part in headerFingerings:  # Part A & B
+        measureFingerings = [
+            element * headerFingeringMultiplications["elementAppearanceInRow"]
+            for element in part
+        ]
+
+        pageFingerings = findAllpageFingerings(measureFingerings)
+        completePage = [
+            col * headerFingeringMultiplications["rows"] for col in pageFingerings
+        ]
+        paragraph.append(completePage)
+
+        headerFingeringsInOneCharacterList = generateUnitsAndChapters(
+            paragraph, headerFingeringMultiplications
+        )
+
+    return headerFingeringsInOneCharacterList
+
+
+def substitueHeaderFingering(museScoreFiles, headerFingeringListToEmbed):
+    for index, museScoreFilePath in enumerate(museScoreFiles):
+        print(f"Embedding Header Fingerings {index+1}/{len(museScoreFiles)}...")
+        with open(museScoreFilePath, "r") as museScoreRawFile:
+            museScoreFile = museScoreRawFile.read()
+            fingeringOccurrencesInFile = findTextOccurencesInMuseScoreFile(
+                museScoreFile
+            )
+            print(fingeringOccurrencesInFile)
+
+
+###########
+#          # exei meinei na kano antikatastash se kathe fingeringOccurrencesInFile ena ena ta elements tou headerFingeringListToEmbed
+
+
+###########################################################################################
+#
+#
+##
+#######################################################################################3
+#
+#
+
+
+def main(bookTitle, serialNumberType, headerFingerings, headerFingeringMultiplications):
     museScoreFiles = findTheListOfMuseScoreFiles(bookTitle)
     serialNoteNumberList = readSerialNoteNumbers()
     finalSerialNoteNumbers = findFinalSerialNumberList(
@@ -255,15 +449,15 @@ def main(bookTitle, serialNumberType):
     )
     initialSerialNumber = SerialNumber(finalSerialNoteNumbers, serialNumberType)
     substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, initialSerialNumber)
+    # headerFingeringsInOneCharacterList = generateHeaderFingeringList(
+    #     headerFingerings, headerFingeringMultiplications
+    # )
+    # substitueHeaderFingering(museScoreFiles, headerFingeringsInOneCharacterList)
 
 
-# 1. να παιρνει σε λουπα τους serial note αριθμους και να τους αντικαθιστα
-
-
-# 2. να φτιαξω το μαλακισμενο συμβολο νοτας με το νουμερο μεσα - ελεος
-# 3. να φτιαξω το header fingering
-# 4. να κανει εξπορτ το pdf του musescore
-# 5. να κανει merge όλα τα pdfs
+# 1. exei meinei na kano antikatastash se kathe fingeringOccurrencesInFile ena ena ta elements tou headerFingeringListToEmbed
+# 2. να κανει εξπορτ το pdf του musescore
+# 3. να κανει merge όλα τα pdfs
 
 
 if __name__ == "__main__":
@@ -279,5 +473,33 @@ if __name__ == "__main__":
     # "first-to-second-second-to-third"
 
     serialNumberType = "no repeat"
+    headerFingerings = [
+        [  # Part A
+            ["i", "m", "i"],
+            ["m", "i", "m"],
+            ["m", "a", "m"],
+            ["a", "m", "a"],
+            ["i", "a", "i"],
+            ["a", "i", "a"],
+        ],
+        # If the paragraphs follow thE sequence IA->ISECOND_NUMBER, IIA->IIB etc
+        # then put all the fingerings in Part A and treat the two paragraphs as one.
+        [  # Part B
+            ["i", "m", "a"],
+            ["i", "a", "m"],
+            ["m", "i", "a"],
+            ["m", "a", "i"],
+            ["a", "m", "i"],
+            ["a", "i", "m"],
+        ],
+    ]
+    headerFingeringMultiplications = {
+        "elementAppearanceInRow": 4,
+        "columns": 1,
+        "rows": 7,
+        "paragraphs": 7,
+        "units": 4,
+        "chapters": 1,
+    }
 
-    main(bookTitle, serialNumberType)
+    main(bookTitle, serialNumberType, headerFingerings, headerFingeringMultiplications)
