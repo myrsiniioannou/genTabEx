@@ -2,7 +2,9 @@ import os
 import itertools
 import copy
 import random
+import glob
 from dataclasses import dataclass
+from PyPDF2 import PdfFileMerger
 
 
 @dataclass
@@ -417,31 +419,65 @@ def generateHeaderFingeringList(headerFingerings, headerFingeringMultiplications
     return headerFingeringsInOneCharacterList
 
 
-def substitueHeaderFingering(museScoreFiles, headerFingeringListToEmbed):
+def substitueHeaderFingerings(museScoreFiles, headerFingeringListToEmbed):
     for index, museScoreFilePath in enumerate(museScoreFiles):
         print(f"Embedding Header Fingerings {index+1}/{len(museScoreFiles)}...")
+        fingeringIndex = 0
         with open(museScoreFilePath, "r") as museScoreRawFile:
             museScoreFile = museScoreRawFile.read()
             fingeringOccurrencesInFile = findTextOccurencesInMuseScoreFile(
                 museScoreFile
             )
-            print(fingeringOccurrencesInFile)
+
+            for occurence in fingeringOccurrencesInFile:
+                codeToEmbed = (
+                    "<text>" + headerFingeringListToEmbed[fingeringIndex] + "</text>"
+                )
+                museScoreFile = (
+                    museScoreFile[:occurence]
+                    + codeToEmbed
+                    + museScoreFile[occurence + len("<text>x</text>") :]
+                )
+                fingeringIndex += 1
+            saveNewMuseScoreFileWithEmbeddedSerialNoteNumbers(
+                museScoreFile, museScoreFilePath
+            )
+    print("Header Fingering Substitution Done!")
 
 
-###########
-#          # exei meinei na kano antikatastash se kathe fingeringOccurrencesInFile ena ena ta elements tou headerFingeringListToEmbed
+def extractPDFs(filePath):
+    for root, dirs, files in os.walk(filePath):
+        for idx, file in enumerate(files):
+            PDFfileName = (
+                "0" + str(idx) + ".pdf" if len(str(idx)) == 1 else str(idx) + ".pdf"
+            )
+            mscxFile = os.path.join(filePath, file)
+            PDFfile = os.path.join(filePath, PDFfileName)
+            command = "MuseScore3.exe -o" + ' "' + PDFfile + '" "' + mscxFile + '"'
+            os.system(command)
+    print("PDF exctraction Done!")
 
 
-###########################################################################################
-#
-#
-##
-#######################################################################################3
-#
-#
+def mergePDFs(filePath, bookTitle):
+    pdfList = glob.glob(filePath + r"/*.pdf")
+    pdfList.sort()
+    merger = PdfFileMerger()
+    for pdfFile in pdfList:
+        pdfFileWithPath = os.path.join(filePath, pdfFile)
+        merger.append(pdfFileWithPath)
+    finalBookNamePath = os.path.join(filePath, bookTitle + ".pdf")
+    merger.write(finalBookNamePath)
+    merger.close()
+    print("Merging PDF files Done!")
 
 
-def main(bookTitle, serialNumberType, headerFingerings, headerFingeringMultiplications):
+def main(
+    bookTitle,
+    serialNumberType,
+    headerFingerings,
+    headerFingeringMultiplications,
+    bookFolder,
+):
     museScoreFiles = findTheListOfMuseScoreFiles(bookTitle)
     serialNoteNumberList = readSerialNoteNumbers()
     finalSerialNoteNumbers = findFinalSerialNumberList(
@@ -449,20 +485,20 @@ def main(bookTitle, serialNumberType, headerFingerings, headerFingeringMultiplic
     )
     initialSerialNumber = SerialNumber(finalSerialNoteNumbers, serialNumberType)
     substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, initialSerialNumber)
-    # headerFingeringsInOneCharacterList = generateHeaderFingeringList(
-    #     headerFingerings, headerFingeringMultiplications
-    # )
-    # substitueHeaderFingering(museScoreFiles, headerFingeringsInOneCharacterList)
-
-
-# 1. exei meinei na kano antikatastash se kathe fingeringOccurrencesInFile ena ena ta elements tou headerFingeringListToEmbed
-# 2. να κανει εξπορτ το pdf του musescore
-# 3. να κανει merge όλα τα pdfs
+    headerFingeringsInOneCharacterList = generateHeaderFingeringList(
+        headerFingerings, headerFingeringMultiplications
+    )
+    substitueHeaderFingerings(museScoreFiles, headerFingeringsInOneCharacterList)
+    filePath = os.path.join(bookFolder, bookTitle)
+    extractPDFs(filePath)
+    mergePDFs(filePath, bookTitle)
+    print("Process Completed!")
 
 
 if __name__ == "__main__":
     # 1. Book Title
     bookTitle = "book-IX"
+    bookFolder = r"C:\Users\merse\Desktop\genTabEx\genTabEx\books"
 
     # 2. Select the type of serial numbers repeat
     # "no repeat"
@@ -502,4 +538,10 @@ if __name__ == "__main__":
         "chapters": 1,
     }
 
-    main(bookTitle, serialNumberType, headerFingerings, headerFingeringMultiplications)
+    main(
+        bookTitle,
+        serialNumberType,
+        headerFingerings,
+        headerFingeringMultiplications,
+        bookFolder,
+    )
