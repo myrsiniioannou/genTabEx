@@ -496,9 +496,10 @@ def main(
 
 
 if __name__ == "__main__":
+    bookFolder = r"C:\Users\merse\Desktop\genTabEx\genTabEx\books"
+
     # 1. Book Title
     bookTitle = "book-IX"
-    bookFolder = r"C:\Users\merse\Desktop\genTabEx\genTabEx\books"
 
     # 2. Select the type of serial numbers repeat
     # "no repeat"
@@ -518,7 +519,7 @@ if __name__ == "__main__":
             ["i", "a", "i"],
             ["a", "i", "a"],
         ],
-        # If the paragraphs follow thE sequence IA->ISECOND_NUMBER, IIA->IIB etc
+        # If the paragraphs follow thE sequence IA->IB, IIA->IIB etc
         # then put all the fingerings in Part A and treat the two paragraphs as one.
         [  # Part B
             ["i", "m", "a"],
