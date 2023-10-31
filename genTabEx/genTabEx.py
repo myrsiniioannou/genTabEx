@@ -383,12 +383,6 @@ def substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, serialNumber)
 
 
 def generateHeaderFingeringList(headerFingerings, headerFingeringMultiplications):
-    def generateUnitsAndChapters(paragraph, multiplications):
-        allParagraphs = (flatten(paragraph)) * multiplications["paragraphs"]
-        allUnits = flatten(allParagraphs * multiplications["units"])
-        allChapters = allUnits * multiplications["chapters"]
-        return flatten(allChapters)
-
     def findAllpageFingerings(measureFingerings):
         pageFingerings = []
         rowfingerings = []
@@ -399,24 +393,30 @@ def generateHeaderFingeringList(headerFingerings, headerFingeringMultiplications
                 rowfingerings = []
         return pageFingerings
 
-    paragraph = []
+    unitFingerings = []
     for part in headerFingerings:  # Part A & B
         measureFingerings = [
             element * headerFingeringMultiplications["elementAppearanceInRow"]
             for element in part
         ]
 
-        pageFingerings = findAllpageFingerings(measureFingerings)
-        completePage = [
-            col * headerFingeringMultiplications["rows"] for col in pageFingerings
+        eachPageFingerings = findAllpageFingerings(measureFingerings)
+
+        paragraphFingerings = [
+            col * headerFingeringMultiplications["rows"] for col in eachPageFingerings
         ]
-        paragraph.append(completePage)
 
-        headerFingeringsInOneCharacterList = generateUnitsAndChapters(
-            paragraph, headerFingeringMultiplications
-        )
+        allPartParagraphs = (
+            flatten(paragraphFingerings)
+        ) * headerFingeringMultiplications["number-of-paragraphs-per-part"]
 
-    return headerFingeringsInOneCharacterList
+        unitFingerings.append(flatten(allPartParagraphs))
+
+    chapterFingerings = flatten(
+        unitFingerings * headerFingeringMultiplications["units"]
+    )
+    wholeBookFingerings = chapterFingerings * headerFingeringMultiplications["chapters"]
+    return wholeBookFingerings
 
 
 def substitueHeaderFingerings(museScoreFiles, headerFingeringListToEmbed):
@@ -478,6 +478,7 @@ def main(
     headerFingeringMultiplications,
     bookFolder,
 ):
+    print("Process Starting")
     museScoreFiles = findTheListOfMuseScoreFiles(bookTitle)
     serialNoteNumberList = readSerialNoteNumbers()
     finalSerialNoteNumbers = findFinalSerialNumberList(
@@ -519,7 +520,8 @@ if __name__ == "__main__":
             ["i", "a", "i"],
             ["a", "i", "a"],
         ],
-        # If the paragraphs follow thE sequence IA->IB, IIA->IIB etc
+        # If the paragraphs follow the sequence IA->IB, IIA->IIB, IIIA->IIIB...
+        # instead of IA, IIA, IIIA, IVA, VA, IB, IIB, IIIB, IVB, VB...
         # then put all the fingerings in Part A and treat the two paragraphs as one.
         [  # Part B
             ["i", "m", "a"],
@@ -534,7 +536,7 @@ if __name__ == "__main__":
         "elementAppearanceInRow": 4,
         "columns": 1,
         "rows": 7,
-        "paragraphs": 7,
+        "number-of-paragraphs-per-part": 7,
         "units": 4,
         "chapters": 1,
     }
