@@ -367,9 +367,10 @@ def findTextOccurencesInMuseScoreFile(museScoreFile):
     return textOccurrencesInFile
 
 
+
 def substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, serialNumber):
     for index, museScoreFilePath in enumerate(museScoreFiles):
-        print(f"Embedding Serial Notes to file {index+1}/{len(museScoreFiles)}...")
+        print(f"Embedding Serial Notes on file {index+1}/{len(museScoreFiles)}...")
         with open(museScoreFilePath, "r") as museScoreRawFile:
             museScoreFile = museScoreRawFile.read()
             textOccurrencesInFile = findTextOccurencesInMuseScoreFile(museScoreFile)
@@ -425,10 +426,8 @@ def substitueHeaderFingerings(museScoreFiles, headerFingeringListToEmbed):
         fingeringIndex = 0
         with open(museScoreFilePath, "r") as museScoreRawFile:
             museScoreFile = museScoreRawFile.read()
-            fingeringOccurrencesInFile = findTextOccurencesInMuseScoreFile(
-                museScoreFile
-            )
-
+            textReference = "<text>x</text>"
+            fingeringOccurrencesInFile = findTextOccurencesInMuseScoreFile(museScoreFile)
             for occurence in fingeringOccurrencesInFile:
                 codeToEmbed = (
                     "<text>" + headerFingeringListToEmbed[fingeringIndex] + "</text>"
@@ -490,17 +489,17 @@ def main(
         headerFingerings, headerFingeringMultiplications
     )
     substitueHeaderFingerings(museScoreFiles, headerFingeringsInOneCharacterList)
-    filePath = os.path.join(bookFolder, bookTitle)
-    extractPDFs(filePath)
-    mergePDFs(filePath, bookTitle)
-    print("Process Completed!")
+    # filePath = os.path.join(bookFolder, bookTitle)
+    # extractPDFs(filePath)
+    # mergePDFs(filePath, bookTitle)
+    # print("Process Completed!")
 
 
 if __name__ == "__main__":
     bookFolder = r"C:\Users\merse\Desktop\genTabEx\genTabEx\books"
 
     # 1. Book Title
-    bookTitle = "book-IX"
+    bookTitle = "book-VII\\book"
 
     # 2. Select the type of serial numbers repeat
     # "no repeat"
@@ -510,34 +509,34 @@ if __name__ == "__main__":
     # "second-to-third-first-to-second"
     # "first-to-second-second-to-third"
 
-    serialNumberType = "no repeat"
+    serialNumberType = "second-to-third"
     headerFingerings = [
         [  # Part A
-            ["i", "m", "i"],
-            ["m", "i", "m"],
-            ["m", "a", "m"],
-            ["a", "m", "a"],
-            ["i", "a", "i"],
-            ["a", "i", "a"],
+            ["i", "m", "i", "p"],
+            ["m", "i", "m", "p"],
+            ["m", "a", "m", "p"],
+            ["a", "m", "a", "p"],
+            ["i", "a", "i", "p"],
+            ["a", "i", "a", "p"],
         ],
         # If the paragraphs follow the sequence IA->IB, IIA->IIB, IIIA->IIIB...
         # instead of IA, IIA, IIIA, IVA, VA, IB, IIB, IIIB, IVB, VB...
         # then put all the fingerings in Part A and treat the two paragraphs as one.
         [  # Part B
-            ["i", "m", "a"],
-            ["i", "a", "m"],
-            ["m", "i", "a"],
-            ["m", "a", "i"],
-            ["a", "m", "i"],
-            ["a", "i", "m"],
+            ["i", "m", "a", "p"],
+            ["i", "a", "m", "p"],
+            ["m", "i", "a", "p"],
+            ["m", "a", "i", "p"],
+            ["a", "m", "i", "p"],
+            ["a", "i", "m", "p"],
         ],
     ]
     headerFingeringMultiplications = {
         "elementAppearanceInRow": 4,
-        "columns": 1,
+        "columns": 2,
         "rows": 7,
-        "number-of-paragraphs-per-part": 7,
-        "units": 4,
+        "number-of-paragraphs-per-part": 4,
+        "units": 3,
         "chapters": 1,
     }
 
