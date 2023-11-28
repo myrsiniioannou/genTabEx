@@ -278,10 +278,10 @@ def findXmlToSubstituteAndEmbedForEachMuseScoreFile(
             closingTag
         )  # Number of characters in closing tag
         XMLstring = xmlToSubstitute[openingTagIndex:closingTagIndex]
-        XMLwithoutOpeningTag = XMLstring.replace(openingTag, "")
-        XMLwithoutOpeningAndClosingTags = XMLwithoutOpeningTag.replace(closingTag, "")
+        XMLwithoutOpeningTag = XMLstring.replace(openingTag, " ")
+        XMLwithoutOpeningAndClosingTags = XMLwithoutOpeningTag.replace(closingTag, " ")
         if " " in XMLwithoutOpeningAndClosingTags:
-            XMLNumberAsString = XMLwithoutOpeningAndClosingTags.replace(" ", "")
+            XMLNumberAsString = XMLwithoutOpeningAndClosingTags.replace(" ", " ")
         else:
             XMLNumberAsString = copy.deepcopy(XMLwithoutOpeningAndClosingTags)
         number = int(XMLNumberAsString)
@@ -367,7 +367,6 @@ def findTextOccurencesInMuseScoreFile(museScoreFile):
     return textOccurrencesInFile
 
 
-
 def substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, serialNumber):
     for index, museScoreFilePath in enumerate(museScoreFiles):
         print(f"Embedding Serial Notes on file {index+1}/{len(museScoreFiles)}...")
@@ -426,8 +425,10 @@ def substitueHeaderFingerings(museScoreFiles, headerFingeringListToEmbed):
         fingeringIndex = 0
         with open(museScoreFilePath, "r") as museScoreRawFile:
             museScoreFile = museScoreRawFile.read()
+            fingeringOccurrencesInFile = findTextOccurencesInMuseScoreFile(
+                museScoreFile
+            )
             textReference = "<text>x</text>"
-            fingeringOccurrencesInFile = findTextOccurencesInMuseScoreFile(museScoreFile)
             for occurence in fingeringOccurrencesInFile:
                 codeToEmbed = (
                     "<text>" + headerFingeringListToEmbed[fingeringIndex] + "</text>"
@@ -435,7 +436,7 @@ def substitueHeaderFingerings(museScoreFiles, headerFingeringListToEmbed):
                 museScoreFile = (
                     museScoreFile[:occurence]
                     + codeToEmbed
-                    + museScoreFile[occurence + len("<text>x</text>") :]
+                    + museScoreFile[occurence + len(textReference) :]
                 )
                 fingeringIndex += 1
             saveNewMuseScoreFileWithEmbeddedSerialNoteNumbers(
@@ -454,6 +455,7 @@ def extractPDFs(filePath):
             PDFfile = os.path.join(filePath, PDFfileName)
             command = "MuseScore3.exe -o" + ' "' + PDFfile + '" "' + mscxFile + '"'
             os.system(command)
+
     print("PDF exctraction Done!")
 
 
@@ -478,28 +480,29 @@ def main(
     bookFolder,
 ):
     print("Process Starting")
-    museScoreFiles = findTheListOfMuseScoreFiles(bookTitle)
-    serialNoteNumberList = readSerialNoteNumbers()
-    finalSerialNoteNumbers = findFinalSerialNumberList(
-        serialNoteNumberList, serialNumberType
-    )
-    initialSerialNumber = SerialNumber(finalSerialNoteNumbers, serialNumberType)
-    substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, initialSerialNumber)
-    headerFingeringsInOneCharacterList = generateHeaderFingeringList(
-        headerFingerings, headerFingeringMultiplications
-    )
-    substitueHeaderFingerings(museScoreFiles, headerFingeringsInOneCharacterList)
-    # filePath = os.path.join(bookFolder, bookTitle)
-    # extractPDFs(filePath)
-    # mergePDFs(filePath, bookTitle)
-    # print("Process Completed!")
+    # museScoreFiles = findTheListOfMuseScoreFiles(bookTitle)
+    # serialNoteNumberList = readSerialNoteNumbers()
+    # finalSerialNoteNumbers = findFinalSerialNumberList(
+    #    serialNoteNumberList, serialNumberType
+    # )
+    # initialSerialNumber = SerialNumber(finalSerialNoteNumbers, serialNumberType)
+    # substituteSerialNoteNumbersOnAllMuseScoreFiles(museScoreFiles, initialSerialNumber)
+    # headerFingeringsInOneCharacterList = generateHeaderFingeringList(
+    #     headerFingerings, headerFingeringMultiplications
+    # )
+    # substitueHeaderFingerings(museScoreFiles, headerFingeringsInOneCharacterList)
+    ##################################################################################
+    filePath = os.path.join(bookFolder, bookTitle)
+    #extractPDFs(filePath)
+    mergePDFs(filePath, bookTitle)
+    print("Process Completed!")
 
 
 if __name__ == "__main__":
     bookFolder = r"C:\Users\merse\Desktop\genTabEx\genTabEx\books"
 
     # 1. Book Title
-    bookTitle = "book-VII\\book"
+    bookTitle = "book-V"
 
     # 2. Select the type of serial numbers repeat
     # "no repeat"
@@ -509,35 +512,61 @@ if __name__ == "__main__":
     # "second-to-third-first-to-second"
     # "first-to-second-second-to-third"
 
-    serialNumberType = "second-to-third"
+    serialNumberType = "no repeat"
     headerFingerings = [
-        [  # Part A
-            ["i", "m", "i", "p"],
-            ["m", "i", "m", "p"],
-            ["m", "a", "m", "p"],
-            ["a", "m", "a", "p"],
-            ["i", "a", "i", "p"],
-            ["a", "i", "a", "p"],
-        ],
         # If the paragraphs follow the sequence IA->IB, IIA->IIB, IIIA->IIIB...
         # instead of IA, IIA, IIIA, IVA, VA, IB, IIB, IIIB, IVB, VB...
         # then put all the fingerings in Part A and treat the two paragraphs as one.
-        [  # Part B
-            ["i", "m", "a", "p"],
-            ["i", "a", "m", "p"],
-            ["m", "i", "a", "p"],
-            ["m", "a", "i", "p"],
-            ["a", "m", "i", "p"],
-            ["a", "i", "m", "p"],
+
+        [  # Part A
+            ["i", "m", "i", "m", " "],
+            ["m", "i", "m", "i", " "],
+            ["m", "a", "m", "a", " "],
+            ["a", "m", "a", "m", " "],
+            ["i", "a", "i", "a", " "],
+            ["a", "i", "a", "i", " "]
         ],
+        [  # Part B
+            ["i", "m", "a", "m", " "],
+            ["i", "m", "i", "a", " "],
+            ["i", "a", "m", "a", " "],
+            ["i", "a", "i", "m", " "],
+            ["m", "i", "m", "a", " "],
+            ["m", "i", "a", "i", " "],
+            ["m", "a", "m", "i", " "],
+            ["m", "a", "i", "a", " "],
+            ["a", "m", "i", "m", " "],
+            ["a", "m", "a", "i", " "],
+            ["a", "i", "m", "i", " "],
+            ["a", "i", "a", "m", " "]
+        ]
+
+        # [  # Part A
+        #     ["i", "m", "i"],
+        #     ["m", "i", "m"],
+        #     ["m", "a", "m"],
+        #     ["a", "m", "a"],
+        #     ["i", "a", "i"],
+        #     ["a", "i", "a"],
+        # ],
+        # [  # Part B
+        #     ["i", "m", "a"],
+        #     ["i", "a", "m"],
+        #     ["m", "i", "a"],
+        #     ["m", "a", "i"],
+        #     ["a", "m", "i"],
+        #     ["a", "i", "m"],
+        # ]
+
+
     ]
     headerFingeringMultiplications = {
         "elementAppearanceInRow": 4,
         "columns": 2,
-        "rows": 7,
-        "number-of-paragraphs-per-part": 4,
-        "units": 3,
-        "chapters": 1,
+        "rows": 6,
+        "number-of-paragraphs-per-part": 5,
+        "units": 1,
+        "chapters": 4,
     }
 
     main(
